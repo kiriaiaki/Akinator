@@ -16,21 +16,171 @@ int main ()
     tree_k Tree = {};
 
     printf ("Привет!\n");
-    printf ("Я программа \033[4mАкинатор\033[0m\n");
-    printf ("Я могу угадать твоего персонажа если он есть моей базе или создать твою новую базу данных\n");
-    printf ("Введи Z, если хочешь сыграть с моей базой или введи Q, чтобы создать свою... ");
-    char Symbol = 0;
+    printf ("Я программа \033[4mАкинатор\033[0m\n\n");
 
-    scanf ("%c", &Symbol);
-    Clean_Stdin ();
+    printf ("Введи [Б], если хочешь взаимодействовать с моей базой\n");
+    printf ("Введи [М], если хочешь создать свою базу и взаимодействовать с ней\n");
+    printf ("Введи [К], если хочешь закончить\n");
+    printf ("\nТвой ввод: ");
 
-    if (Symbol == 'Z')
+    char* Answer_User = NULL;
+    size_t Len = 0;
+    getline (&Answer_User, &Len, stdin);
+    if (Delete_Slash_N (Answer_User) == There_Are_Errors)
     {
+        return 0;
+    }
+
+    if (strcmp (Answer_User, "Б") == 0 || strcmp (Answer_User, "б") == 0)
+    {
+        printf ("\033[H\033[J");
+        fflush(stdout);
+
         if (Tree_Ctor_From_Base (&Tree) == There_Are_Errors)
         {
             return 0;
         }
 
+        printf ("Дерево успешно загружено из базы!\n");
+
+        printf ("Введи [И], если хочешь запустить отгадывание\n");
+        printf ("Введи [О], если хочешь получить описание узла\n");
+        printf ("Введи [С], если хочешь сравнить два узла\n");
+        printf ("Введи [К], если хочешь закончить\n");
+
+        printf ("\nТвой ввод: ");
+
+        getline (&Answer_User, &Len, stdin);
+        if (Delete_Slash_N (Answer_User) == There_Are_Errors)
+        {
+            return 0;
+        }
+
+        printf ("\033[H\033[J");
+        fflush(stdout);
+        if (strcmp (Answer_User, "И") == 0 || strcmp (Answer_User, "и") == 0)
+        {
+            Play (&Tree);
+        }
+        else if (strcmp (Answer_User, "О") == 0 || strcmp (Answer_User, "о") == 0)
+        {
+            Definition_Node (&Tree);
+        }
+        else if (strcmp (Answer_User, "С") == 0 || strcmp (Answer_User, "с") == 0)
+        {
+            printf ("Сорри админ пока не добавил эту функцию ;(\n");
+        }
+        else if (strcmp (Answer_User, "К") == 0 || strcmp (Answer_User, "к") == 0)
+        {
+        }
+        else
+        {
+            printf ("Ты, конечно, извини, но я тебя нормально попросил ввести команду, дал тебе их список, если ты тупой, то это не моя проблема, я работать не собираюсь\n");
+        }
+    }
+
+    else if (strcmp (Answer_User, "М") == 0 || strcmp (Answer_User, "м") == 0)
+    {
+        printf ("\033[H\033[J");
+        fflush(stdout);
+
+        if (New_Tree_Ctor (&Tree) == There_Are_Errors)
+        {
+            return 0;
+        }
+
+        printf ("\033[H\033[J");
+        fflush(stdout);
+        printf ("Твое дерево успешно создано!\n");
+
+        printf ("Введи [И], если хочешь запустить отгадывание\n");
+        printf ("Введи [О], если хочешь получить описание узла\n");
+        printf ("Введи [С], если хочешь сравнить два узла\n");
+        printf ("Введи [К], если хочешь закончить\n");
+
+        printf ("\nТвой ввод: ");
+
+        getline (&Answer_User, &Len, stdin);
+        if (Delete_Slash_N (Answer_User) == There_Are_Errors)
+        {
+            return 0;
+        }
+
+        printf ("\033[H\033[J");
+        fflush(stdout);
+
+        if (strcmp (Answer_User, "И") == 0 || strcmp (Answer_User, "и") == 0)
+        {
+            Play (&Tree);
+        }
+        else if (strcmp (Answer_User, "О") == 0 || strcmp (Answer_User, "о") == 0)
+        {
+            Definition_Node (&Tree);
+        }
+        else if (strcmp (Answer_User, "С") == 0 || strcmp (Answer_User, "с") == 0)
+        {
+            printf ("Сорри админ пока не добавил эту функцию ;(\n");
+        }
+        else if (strcmp (Answer_User, "К") == 0 || strcmp (Answer_User, "к") == 0)
+        {
+        }
+        else
+        {
+            printf ("Ты, конечно, извини, но я тебя нормально попросил ввести команду, дал тебе их список, если ты тупой, то это не моя проблема, я работать не собираюсь\n");
+        }
+    }
+
+    else if (strcmp (Answer_User, "К") == 0 || strcmp (Answer_User, "к") == 0)
+    {
+    }
+
+    else
+    {
+        printf ("Ты, конечно, извини, но я тебя нормально попросил ввести команду, дал тебе их список, если ты тупой, то это не моя проблема, я работать не собираюсь\n");
+    }
+
+
+//
+// //         while (1)
+// //         {
+// //             printf ("Введи P, если хочешь сыграть со своим деревом или введи E, чтобы закончить... ");
+// //             scanf ("%c", &Symbol);
+// //             Clean_Stdin ();
+// //
+// //             if (Symbol == 'P')
+// //             {
+// //                 Play (&Tree);
+// //             }
+// //
+// //             else if (Symbol == 'E')
+// //             {
+// //                 printf ("Пока!\n");
+// //                 return 0;
+// //             }
+// //         }
+// //
+//
+//
+// //Функции
+// // 1) Создать по базе / создать свое мини дерево / закончить
+// // 2) Играть в угадайку / составить описание узла / сравнить два узла / закончить
+// // 3) Если играл в угадайку и такого нет, то сохранить дерево в базу / нет (! предупредить о перезаписи базы и утери старой навсегда !)
+// // 4) Если создал свое сохранить его в новую базу / нет
+// // 5) После сравнения / описания / любой игры / ?сохранения? спросить будем играть снова с этим же деревом, если базу перезаписывали то с обновленным
+// // 6) попрощаться
+// // всегда чистить консоль и оставлять только таблицу команд прочий ввод игнорировать
+//
+//         Definition_Node (&Tree);
+//         return 0;
+//     }
+//
+//     else if (Symbol == 'Q')
+//     {
+//         if (New_Tree_Ctor (&Tree) == There_Are_Errors)
+//         {
+//             return 0;
+//         }
+//
 //         while (1)
 //         {
 //             printf ("Введи P, если хочешь сыграть со своим деревом или введи E, чтобы закончить... ");
@@ -48,47 +198,7 @@ int main ()
 //                 return 0;
 //             }
 //         }
-//
-
-
-//Функции
-// 1) Создать по базе / создать свое мини дерево / закончить
-// 2) Играть в угадайку / составить описание узла / сравнить два узла / закончить
-// 3) Если играл в угадайку и такого нет, то сохранить дерево в базу / нет (! предупредить о перезаписи базы и утери старой навсегда !)
-// 4) Если создал свое сохранить его в новую базу / нет
-// 5) После сравнения / описания / любой игры / ?сохранения? спросить будем играть снова с этим же деревом, если базу перезаписывали то с обновленным
-// 6) попрощаться
-// всегда чистить консоль и оставлять только таблицу команд прочий ввод игнорировать
-
-        Definition_Node (&Tree);
-        return 0;
-    }
-
-    else if (Symbol == 'Q')
-    {
-        if (New_Tree_Ctor (&Tree) == There_Are_Errors)
-        {
-            return 0;
-        }
-
-        while (1)
-        {
-            printf ("Введи P, если хочешь сыграть со своим деревом или введи E, чтобы закончить... ");
-            scanf ("%c", &Symbol);
-            Clean_Stdin ();
-
-            if (Symbol == 'P')
-            {
-                Play (&Tree);
-            }
-
-            else if (Symbol == 'E')
-            {
-                printf ("Пока!\n");
-                return 0;
-            }
-        }
-    }
+//     }
 
 //     if (Save_Tree_In_File (&Tree) == There_Are_Errors)
 //     {
@@ -149,8 +259,7 @@ int New_Tree_Ctor       (tree_k* const Tree)
 
     size_t Len = 0;
 
-
-    printf ("\nВведите первый вопрос: ");
+    printf ("\nВведи первый вопрос в твоем дереве: ");
     if (getline (&Tree->Root->Str, &Len, stdin) == -1)
     {
         printf ("%s:%d: Error getline\n", __FILE__, __LINE__);
@@ -162,7 +271,7 @@ int New_Tree_Ctor       (tree_k* const Tree)
     }
 
 
-    printf ("Введите на него ответ, если ответ \"ДА\": ");
+    printf ("\nВведи кого ты загадал, если ответ \"ДА\": ");
     if (getline (&Tree->Root->Left->Str, &Len, stdin) == -1)
     {
         printf ("%s:%d: Error getline\n", __FILE__, __LINE__);
@@ -173,7 +282,7 @@ int New_Tree_Ctor       (tree_k* const Tree)
         return NULL;
     }
 
-    printf ("Введите на него ответ, если ответ \"НЕТ\": ");
+    printf ("\nВведи кого ты загадал, если ответ \"НЕТ\": ");
     if (getline (&Tree->Root->Right->Str, &Len, stdin) == -1)
     {
         printf ("%s:%d: Error getline\n", __FILE__, __LINE__);
@@ -724,7 +833,9 @@ node_k* Tree_Append    (node_k* const Node, tree_k* const Tree)
     }
 
     printf ("Чем %s отличается от %s?\n", Node->Left->Str, Node->Right->Str);
-    printf ("Дополни фразу: Он(а)... ");
+    printf ("Дополни фразу: Он(а)... \n");
+
+    printf ("\nТвой ввод: ");
     if (getline (&Node->Str, &Len, stdin) == -1)
     {
         printf ("%s:%d: Error getline\n", __FILE__, __LINE__);
@@ -825,51 +936,76 @@ int Play (tree_k* const Tree)
 
     while (Current_Node != NULL)
     {
-        printf ("Он(а) %s?\n", Current_Node->Str);
+        printf ("Он(а) %s?\n\n", Current_Node->Str);
 
-        char Symbol = 0;
-        printf ("Y - да; N - нет... ");
-        scanf ("%c", &Symbol);
-        Clean_Stdin ();
+        printf ("Введи [Д], если ответ ДА\n");
+        printf ("Введи [Н], если ответ НЕТ\n");
 
-        if (Symbol == 'Y')
+        printf ("\nТвой ввод: ");
+
+        char* Answer_User = NULL;
+        size_t Len = 0;
+        getline (&Answer_User, &Len, stdin);
+        if (Delete_Slash_N (Answer_User) == There_Are_Errors)
+        {
+            return 0;
+        }
+
+
+        if (strcmp (Answer_User, "Д") == 0 || strcmp (Answer_User, "д") == 0)
         {
             if (Current_Node->Left == NULL)
             {
-                printf ("Я победил тебя!\n");
+                printf ("\nЯ отгадал, твой персонаж это %s!\n", Current_Node->Str);
                 return 0;
             }
 
             Current_Node = Current_Node->Left;
         }
 
-        else if (Symbol == 'N')
+        else if (strcmp (Answer_User, "Н") == 0 || strcmp (Answer_User, "н") == 0)
         {
             if (Current_Node->Right == NULL)
             {
-                printf ("Похоже такого персонажа нету в моей базе ;(\n");
-                printf ("Хочешь добавить своего персонажа?\n");
-                printf ("Y - да; N - нет... ");
-                scanf ("%c", &Symbol);
-                Clean_Stdin ();
+                printf ("Похоже, такого персонажа нету в данной базе ;(\n");
+                printf ("Хочешь добавить своего персонажа в базу?\n\n");
 
-                if (Symbol == 'Y')
+                printf ("Введи [Д], если ответ ДА\n");
+                printf ("Введи [Н], если ответ НЕТ\n");
+
+                printf ("\nТвой ввод: ");
+
+                getline (&Answer_User, &Len, stdin);
+                if (Delete_Slash_N (Answer_User) == There_Are_Errors)
+                {
+                    return 0;
+                }
+
+                if (strcmp (Answer_User, "Д") == 0 || strcmp (Answer_User, "д") == 0)
                 {
                     Tree_Append (Current_Node, Tree);
                     return 0;
                 }
 
-                else if (Symbol == 'N')
+                else if (strcmp (Answer_User, "Н") == 0 || strcmp (Answer_User, "н") == 0)
                 {
                     return 0;
                 }
 
+                else
+                {
+                    printf ("Ты, конечно, извини, но я тебя нормально попросил ввести команду, дал тебе их список, если ты тупой, то это не моя проблема, я работать не собираюсь\n");
+                    return 0;
+                }
+
             }
+
             Current_Node = Current_Node->Right;
         }
 
         else
         {
+            printf ("Ты, конечно, извини, но я тебя нормально попросил ввести команду, дал тебе их список, если ты тупой, то это не моя проблема, я работать не собираюсь\n");
             return 0;
         }
     }
@@ -878,7 +1014,9 @@ int Play (tree_k* const Tree)
 
 int Definition_Node (const tree_k* const Tree)
 {
-    printf ("Введи имя узла, для которого я составлю описание... \n");
+    printf ("Введи имя узла, для которого я составлю описание\n");
+    printf ("\nТвой ввод: ");
+
     char* Answer_User = NULL;
     size_t Len = 0;
     if (getline (&Answer_User, &Len, stdin) == -1)
@@ -905,30 +1043,14 @@ int Definition_Node (const tree_k* const Tree)
 
         if (Direction == 2)
         {
-            if (Stack_Return.Size == 0)
-            {
-                printf ("Он(а) НЕ %s\n", Current_Node->Str);
-            }
-
-            else
-            {
-                printf ("Он(а) НЕ %s, ", Current_Node->Str);
-            }
+            printf ("%zu) Он(а) НЕ %s;\n", i + 1, Current_Node->Str);
 
             Current_Node = Current_Node->Right;
         }
 
         else if (Direction == 1)
         {
-            if (Stack_Return.Size == 0)
-            {
-                printf ("Он(а) %s\n", Current_Node->Str);
-            }
-
-            else
-            {
-                printf ("Он(а) %s, ", Current_Node->Str);
-            }
+            printf ("%zu) Он(а) %s;\n", i + 1, Current_Node->Str);
 
             Current_Node = Current_Node->Left;
         }
@@ -1151,3 +1273,4 @@ int Delete_Slash_N         (char* const Str)
         return There_Are_Errors;
     }
 }
+
