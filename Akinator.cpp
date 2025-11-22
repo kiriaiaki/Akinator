@@ -14,17 +14,86 @@ int main ()
     #endif // DEBUG
 
     tree_k Tree = {};
-    if (Tree_Ctor_From_Base (&Tree) == There_Are_Errors)
+
+    printf ("Привет!\n");
+    printf ("Я программа \033[4mАкинатор\033[0m\n");
+    printf ("Я могу угадать твоего персонажа если он есть моей базе или создать твою новую базу данных\n");
+    printf ("Введи Z, если хочешь сыграть с моей базой или введи Q, чтобы создать свою... ");
+    char Symbol = 0;
+
+    scanf ("%c", &Symbol);
+    Clean_Stdin ();
+
+    if (Symbol == 'Z')
     {
+        if (Tree_Ctor_From_Base (&Tree) == There_Are_Errors)
+        {
+            return 0;
+        }
+
+//         while (1)
+//         {
+//             printf ("Введи P, если хочешь сыграть со своим деревом или введи E, чтобы закончить... ");
+//             scanf ("%c", &Symbol);
+//             Clean_Stdin ();
+//
+//             if (Symbol == 'P')
+//             {
+//                 Play (&Tree);
+//             }
+//
+//             else if (Symbol == 'E')
+//             {
+//                 printf ("Пока!\n");
+//                 return 0;
+//             }
+//         }
+//
+
+
+//Функции
+// 1) Создать по базе / создать свое мини дерево / закончить
+// 2) Играть в угадайку / составить описание узла / сравнить два узла / закончить
+// 3) Если играл в угадайку и такого нет, то сохранить дерево в базу / нет (! предупредить о перезаписи базы и утери старой навсегда !)
+// 4) Если создал свое сохранить его в новую базу / нет
+// 5) После сравнения / описания / любой игры / ?сохранения? спросить будем играть снова с этим же деревом, если базу перезаписывали то с обновленным
+// 6) попрощаться
+// всегда чистить консоль и оставлять только таблицу команд прочий ввод игнорировать
+
+        Definition_Node (&Tree);
         return 0;
     }
 
-
-
-    if (Print_Tree_In_File (&Tree) == There_Are_Errors)
+    else if (Symbol == 'Q')
     {
-        return 0;
+        if (New_Tree_Ctor (&Tree) == There_Are_Errors)
+        {
+            return 0;
+        }
+
+        while (1)
+        {
+            printf ("Введи P, если хочешь сыграть со своим деревом или введи E, чтобы закончить... ");
+            scanf ("%c", &Symbol);
+            Clean_Stdin ();
+
+            if (Symbol == 'P')
+            {
+                Play (&Tree);
+            }
+
+            else if (Symbol == 'E')
+            {
+                printf ("Пока!\n");
+                return 0;
+            }
+        }
     }
+
+//     if (Save_Tree_In_File (&Tree) == There_Are_Errors)
+//     {
+//         return 0;
+//     }
 
     #ifndef DEBUG
         if (Start_Logfile () == There_Are_Errors)
@@ -80,21 +149,39 @@ int New_Tree_Ctor       (tree_k* const Tree)
 
     size_t Len = 0;
 
-    printf ("Введите первый вопрос: ");
-    getline (&Tree->Root->Str, &Len, stdout);
 
-    printf ("Введите на него ответ, если ответ \"ДА\": ");
-    if (getline (&Tree->Root->Left->Str, &Len, stdout) == -1)
+    printf ("\nВведите первый вопрос: ");
+    if (getline (&Tree->Root->Str, &Len, stdin) == -1)
     {
         printf ("%s:%d: Error getline\n", __FILE__, __LINE__);
         return There_Are_Errors;
     }
+    if (Delete_Slash_N (Tree->Root->Str) == There_Are_Errors)
+    {
+        return NULL;
+    }
 
-    printf ("Введите на него ответ, если ответ \"НЕТ\": ");
-    if (getline (&Tree->Root->Right->Str, &Len, stdout) == -1)
+
+    printf ("Введите на него ответ, если ответ \"ДА\": ");
+    if (getline (&Tree->Root->Left->Str, &Len, stdin) == -1)
     {
         printf ("%s:%d: Error getline\n", __FILE__, __LINE__);
         return There_Are_Errors;
+    }
+    if (Delete_Slash_N (Tree->Root->Left->Str) == There_Are_Errors)
+    {
+        return NULL;
+    }
+
+    printf ("Введите на него ответ, если ответ \"НЕТ\": ");
+    if (getline (&Tree->Root->Right->Str, &Len, stdin) == -1)
+    {
+        printf ("%s:%d: Error getline\n", __FILE__, __LINE__);
+        return There_Are_Errors;
+    }
+    if (Delete_Slash_N (Tree->Root->Right->Str) == There_Are_Errors)
+    {
+        return NULL;
     }
 
     #ifdef DEBUG
@@ -161,7 +248,10 @@ int Tree_Dtor           (tree_k* const Tree)
 
     size_t Counter_Delete = 0;
 
-    Delete_Subtree (Tree->Root, &Counter_Delete);
+    if (Tree->Root != NULL && Tree->Root->Verification == ((uintptr_t) Tree->Root ^ Canary))
+    {
+        Delete_Subtree (Tree->Root, &Counter_Delete);
+    }
 
     Tree->Size = 0;
     free (Tree->Root);
@@ -319,7 +409,10 @@ int Dump_For_Graph     (const tree_k* const Tree, FILE* const file_graph)
     fprintf (file_graph, "\n");
     #endif // LIGHT_DUMP
 
-    Dump_Node (Tree->Root, file_graph);
+    if (Tree->Root != NULL && Tree->Root->Verification == ((uintptr_t) Tree->Root ^ Canary))
+    {
+        Dump_Node (Tree->Root, file_graph);
+    }
 
     fprintf (file_graph, "}\n");
     return 0;
@@ -345,7 +438,7 @@ int Dump_Node          (const node_k* const Node, FILE* const file_graph)
 
     else
     {
-        fprintf (file_graph, "    node_%lx [shape = Mrecord, label = \"%s\", style = \"filled\", fillcolor = \"lightblue\"];\n\n", (uintptr_t) Node, Node->Str);
+        fprintf (file_graph, "    node_%lx [shape = record, label = \"%s\", style = \"filled\", fillcolor = \"lightblue\"];\n\n", (uintptr_t) Node, Node->Str);
     }
     #endif // LIGHT_DUMP
 
@@ -419,7 +512,7 @@ int Dump_For_Html      (const tree_k* const Tree, const char* const Name_File_Gr
     fprintf (file, "<img src = \"%s\">\n", Name_File_Graph);
     fprintf (file, "\n");
 
-    Print_Separator_In_Log (400, file);
+    Print_Separator_In_Log (200, file);
     fclose (file);
 
     #ifdef STOP_PROGRAMME
@@ -430,7 +523,7 @@ int Dump_For_Html      (const tree_k* const Tree, const char* const Name_File_Gr
 }
 
 
-int Print_Tree_In_File (const tree_k* const Tree)
+int Save_Tree_In_File  (const tree_k* const Tree)
 {
     FILE* Data_Base = fopen (New_Name_Base_Data, "w");
     if (Data_Base == NULL)
@@ -620,17 +713,25 @@ node_k* Tree_Append    (node_k* const Node, tree_k* const Tree)
     size_t Len = 0;
 
     printf ("Кого ты загадал: ");
-    if (getline (&Tree->Root->Left->Str, &Len, stdout) == -1)
+    if (getline (&Node->Left->Str, &Len, stdin) == -1)
     {
         printf ("%s:%d: Error getline\n", __FILE__, __LINE__);
+        return NULL;
+    }
+    if (Delete_Slash_N (Node->Left->Str) == There_Are_Errors)
+    {
         return NULL;
     }
 
     printf ("Чем %s отличается от %s?\n", Node->Left->Str, Node->Right->Str);
     printf ("Дополни фразу: Он(а)... ");
-    if (getline (&Tree->Root->Left->Str, &Len, stdout) == -1)
+    if (getline (&Node->Str, &Len, stdin) == -1)
     {
         printf ("%s:%d: Error getline\n", __FILE__, __LINE__);
+        return NULL;
+    }
+    if (Delete_Slash_N (Node->Str) == There_Are_Errors)
+    {
         return NULL;
     }
 
@@ -664,12 +765,6 @@ node_k* Append_Sons    (node_k* const Node)
         }
 
         (Node->Left)->Verification = (uintptr_t) (Node->Left) ^ Canary;
-        (Node->Left)->Str = (char*) calloc (100, sizeof (char));
-        if ((Node->Left)->Str == NULL)
-        {
-            printf ("%s:%d: Error allocation memory for new node\n", __FILE__, __LINE__);
-            return NULL;
-        }
         (Node->Left)->Left = NULL;
         (Node->Left)->Right = NULL;
 
@@ -724,6 +819,178 @@ int Delete_Subtree (node_k* Node, size_t* const Counter_Delete)
 }
 
 
+int Play (tree_k* const Tree)
+{
+    node_k* Current_Node = Tree->Root;
+
+    while (Current_Node != NULL)
+    {
+        printf ("Он(а) %s?\n", Current_Node->Str);
+
+        char Symbol = 0;
+        printf ("Y - да; N - нет... ");
+        scanf ("%c", &Symbol);
+        Clean_Stdin ();
+
+        if (Symbol == 'Y')
+        {
+            if (Current_Node->Left == NULL)
+            {
+                printf ("Я победил тебя!\n");
+                return 0;
+            }
+
+            Current_Node = Current_Node->Left;
+        }
+
+        else if (Symbol == 'N')
+        {
+            if (Current_Node->Right == NULL)
+            {
+                printf ("Похоже такого персонажа нету в моей базе ;(\n");
+                printf ("Хочешь добавить своего персонажа?\n");
+                printf ("Y - да; N - нет... ");
+                scanf ("%c", &Symbol);
+                Clean_Stdin ();
+
+                if (Symbol == 'Y')
+                {
+                    Tree_Append (Current_Node, Tree);
+                    return 0;
+                }
+
+                else if (Symbol == 'N')
+                {
+                    return 0;
+                }
+
+            }
+            Current_Node = Current_Node->Right;
+        }
+
+        else
+        {
+            return 0;
+        }
+    }
+    return 0;
+}
+
+int Definition_Node (const tree_k* const Tree)
+{
+    printf ("Введи имя узла, для которого я составлю описание... \n");
+    char* Answer_User = NULL;
+    size_t Len = 0;
+    if (getline (&Answer_User, &Len, stdin) == -1)
+    {
+        printf ("%s:%d: Error getline\n", __FILE__, __LINE__);
+        return NULL;
+    }
+    if (Delete_Slash_N (Answer_User) == There_Are_Errors)
+    {
+        return NULL;
+    }
+
+    stack_k Stack_Return = {};
+    Stack_Ctor (&Stack_Return, 10);
+
+    node_k* You_Node = Search_Node (Answer_User, Tree->Root, &Stack_Return);
+
+    size_t Len_Way = Stack_Return.Size;
+    node_k* Current_Node = Tree->Root;
+
+    for (size_t i = 0; i < Len_Way; i++)
+    {
+        int Direction = Stack_Pop (&Stack_Return);
+
+        if (Direction == 2)
+        {
+            if (Stack_Return.Size == 0)
+            {
+                printf ("Он(а) НЕ %s\n", Current_Node->Str);
+            }
+
+            else
+            {
+                printf ("Он(а) НЕ %s, ", Current_Node->Str);
+            }
+
+            Current_Node = Current_Node->Right;
+        }
+
+        else if (Direction == 1)
+        {
+            if (Stack_Return.Size == 0)
+            {
+                printf ("Он(а) %s\n", Current_Node->Str);
+            }
+
+            else
+            {
+                printf ("Он(а) %s, ", Current_Node->Str);
+            }
+
+            Current_Node = Current_Node->Left;
+        }
+    }
+
+    Stack_Dtor (&Stack_Return);
+
+    if (You_Node == NULL)
+    {
+        printf ("Извини, но в данном дереве нет такого варианта ответа ;(\n");
+        return There_Are_Errors;
+    }
+
+    return 0;
+}
+
+node_k* Search_Node (const char* const String, node_k* Node, stack_k* const Stack_Return)
+{
+    if (Node->Left == NULL && Node->Right == NULL)
+    {
+        if (strcmp (Node->Str, String) == 0)
+        {
+            return Node;
+        }
+
+        else
+        {
+            return NULL;
+        }
+    }
+
+    if (Node->Left != NULL)
+    {
+        if (Node->Left->Verification == ((uintptr_t) (Node->Left) ^ Canary))
+        {
+            node_k* Pointer = Search_Node (String, Node->Left, Stack_Return);
+            if (Pointer != NULL)
+            {
+                Stack_Push (Stack_Return, 1);
+                return Pointer;
+            }
+        }
+    }
+
+    if (Node->Right != NULL)
+    {
+        if (Node->Right->Verification == ((uintptr_t) (Node->Right) ^ Canary))
+        {
+            node_k* Pointer = Search_Node (String, Node->Right, Stack_Return);
+
+            if (Pointer != NULL)
+            {
+                Stack_Push (Stack_Return, 2);
+                return Pointer;
+            }
+        }
+    }
+
+    return NULL;
+}
+
+
 int Start_Logfile          ()
 {
     FILE* file_html = fopen (Name_Log, "w");
@@ -735,7 +1002,7 @@ int Start_Logfile          ()
 
     fprintf (file_html, "<pre>\n\n");
 
-    Print_Separator_In_Log (400, file_html);
+    Print_Separator_In_Log (200, file_html);
 
     fclose (file_html);
 
@@ -856,4 +1123,31 @@ int Copy_File_In_Buffer    (char** const Buffer)
     return 0;
 }
 
+int Clean_Stdin            ()
+{
+    int Symbol = '\0';
 
+    while (Symbol != '\n' && Symbol != EOF)
+    {
+        Symbol = getchar ();
+    }
+
+    return 0;
+}
+
+int Delete_Slash_N         (char* const Str)
+{
+    size_t Len = strlen (Str);
+
+    if (Len > 0 && Str[Len - 1] == '\n')
+    {
+        Str[Len - 1] = '\0';
+        return 0;
+    }
+
+    else
+    {
+        printf ("%s:%d: Error delete in string\n", __FILE__, __LINE__);
+        return There_Are_Errors;
+    }
+}

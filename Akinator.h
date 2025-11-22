@@ -4,6 +4,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include "Stack.h"
 
 struct node_k
 {
@@ -62,7 +63,7 @@ int Dump_For_Graph     (const tree_k* const Tree, FILE* const file_graph);
 int Dump_Node          (const node_k* const Node, FILE* const file_graph);
 int Dump_For_Html      (const tree_k* const Tree, const char* const Name_File, const char* const Name_Function);
 
-int Print_Tree_In_File (const tree_k* const Tree);
+int Save_Tree_In_File  (const tree_k* const Tree);
 int Print_Node         (const node_k* const Node, FILE* const Data_Base);
 node_k* Read_Node      (char** const Current_Position, size_t* const Counter_Node);
 int Check_End          (char** const Current_Position);
@@ -73,10 +74,16 @@ node_k* Append_Sons    (node_k* const Node);
 
 int Delete_Subtree     (node_k* Node, size_t* const Counter_Delete);
 
+int Play (tree_k* const Tree);
+int Definition_Node (const tree_k* const Tree);
+node_k* Search_Node (const char* const String, node_k* Node, stack_k* const Stack_Return);
+
 int Start_Logfile          ();
 int Print_Separator_In_Log (const size_t Len_Separator, FILE* file_html);
 int Reverse_Str            (char* const Str);
 char* itoa_k               (int Number, char* const Str);
 unsigned int Hash_Pointer  (const void* const ptr);
 int Copy_File_In_Buffer    (char** const Buffer);
+int Clean_Stdin            ();
+int Delete_Slash_N         (char* const Str);
 
