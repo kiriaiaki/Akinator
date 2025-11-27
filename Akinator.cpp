@@ -1233,11 +1233,23 @@ int Comparison_Nods  (const tree_k* const Tree)
     }
 
     printf ("+-----------------------------------------------+-----------------------------------------------+\n");
-    printf ("|  %s%*s     |  %s%*s     |\n", First_Node->Str, int (40 - strlen (First_Node->Str) / 2), " ", Second_Node->Str, int (40 - strlen (Second_Node->Str) / 2), " ");
+    printf ("|  %s%*s     |  %s%*s     |\n", First_Node->Str, int (40 - strlen_k ( (unsigned char*) First_Node->Str)), " ", Second_Node->Str, int (40 - strlen_k ((unsigned char*) Second_Node->Str)), " ");
     printf ("+-----------------------------------------------+-----------------------------------------------+\n");
     printf ("|  %39s  Совпадения %39s  |\n", " ", " ");
 
     if (Table_Comparison (&Stack_Return_1, &Stack_Return_2, Tree->Root) == There_Are_Errors)
+    {
+        printf ("%s:%d: Error in %s", __FILE__, __LINE__, __FUNCTION__);
+        Stack_Dtor (&Stack_Return_1);
+        Stack_Dtor (&Stack_Return_2);
+        free (Answer_User_1);
+        free (Answer_User_2);
+        return There_Are_Errors;
+    }
+
+    printf ("Иными словами\n\n");
+    print_k ("%s похож на %s тем, что они: ", First_Node->Str, Second_Node->Str);
+    if (Text_Comparison (&Stack_Return_1, &Stack_Return_2, Tree->Root) == There_Are_Errors)
     {
         printf ("%s:%d: Error in %s", __FILE__, __LINE__, __FUNCTION__);
         Stack_Dtor (&Stack_Return_1);
@@ -1259,14 +1271,14 @@ int Table_Comparison (stack_k* const Stack_Return_1, stack_k* const Stack_Return
     size_t Len_Way = MAX (Stack_Return_1->Size, Stack_Return_2->Size);
     node_k* Current_Node_1 = Root;
     node_k* Current_Node_2 = Root;
-    int Flag = Match;
+    int Comparison_Status = Match;
 
     for (size_t i = 0; i < Len_Way; i++)
     {
         int Direction_1 = 0;
-        if (Stack_Return_1->Size != 0)
+        if (i < Stack_Return_1->Size )
         {
-            Direction_1 = Stack_Pop (Stack_Return_1);
+            Direction_1 = Stack_Get_Element (Stack_Return_1, Stack_Return_1->Size - i);
             if (Direction_1 == There_Are_Errors_Stack)
             {
                 printf ("%s:%d: Error pop from stack in %s\n", __FILE__, __LINE__, __FUNCTION__);
@@ -1275,9 +1287,9 @@ int Table_Comparison (stack_k* const Stack_Return_1, stack_k* const Stack_Return
         }
 
         int Direction_2 = 0;
-        if (Stack_Return_2->Size != 0)
+        if (i < Stack_Return_2->Size)
         {
-            Direction_2 = Stack_Pop (Stack_Return_2);
+            Direction_2 = Stack_Get_Element (Stack_Return_2, Stack_Return_2->Size - i);
             if (Direction_2 == There_Are_Errors_Stack)
             {
                 printf ("%s:%d: Error pop from stack in %s\n", __FILE__, __LINE__, __FUNCTION__);
@@ -1285,26 +1297,14 @@ int Table_Comparison (stack_k* const Stack_Return_1, stack_k* const Stack_Return
             }
         }
 
-
-        if (Flag == Match)
+        if (Comparison_Status == Match)
         {
             if (Direction_1 != Direction_2)
             {
-                if (Stack_Push (Stack_Return_1, Direction_1) == There_Are_Errors_Stack)
-                {
-                    printf ("%s:%d: Error push in stack in %s\n", __FILE__, __LINE__, __FUNCTION__);
-                    return There_Are_Errors;
-                }
-                if (Stack_Push (Stack_Return_2, Direction_2) == There_Are_Errors_Stack)
-                {
-                    printf ("%s:%d: Error push in stack in %s\n", __FILE__, __LINE__, __FUNCTION__);
-                    return There_Are_Errors;
-                }
-
                 printf ("+-----------------------------------------------+-----------------------------------------------+\n");
                 printf ("|  %40s  Различия %40s  |\n", " ", " ");
 
-                Flag = Vary;
+                Comparison_Status = Vary;
 
                 i--;
             }
@@ -1313,7 +1313,7 @@ int Table_Comparison (stack_k* const Stack_Return_1, stack_k* const Stack_Return
             {
                 if (Direction_1 == Right)
                 {
-                    printf ("| Он(а) НЕ %s%*s     | Он(а) НЕ %s%*s     |\n", Current_Node_1->Str, int (32 - strlen (Current_Node_1->Str) / 2), " ", Current_Node_2->Str,  int (32 - strlen (Current_Node_2->Str) / 2), " ");
+                    printf ("| Он(а) НЕ %s%*s     | Он(а) НЕ %s%*s     |\n", Current_Node_1->Str, int (32 - strlen_k ((unsigned char*) Current_Node_1->Str)), " ", Current_Node_2->Str,  int (32 - strlen_k ((unsigned char*) Current_Node_2->Str)), " ");
 
                     Current_Node_1 = Current_Node_1->Right;
                     Current_Node_2 = Current_Node_2->Right;
@@ -1321,7 +1321,7 @@ int Table_Comparison (stack_k* const Stack_Return_1, stack_k* const Stack_Return
 
                 else if (Direction_1 == Left)
                 {
-                    printf ("| Он(а) %s%*s     | Он(а) %s%*s     |\n", Current_Node_1->Str, int (35 - strlen (Current_Node_1->Str) / 2), " ", Current_Node_2->Str,  int (35 - strlen (Current_Node_2->Str) / 2), " ");
+                    printf ("| Он(а) %s%*s     | Он(а) %s%*s     |\n", Current_Node_1->Str, int (35 - strlen_k ((unsigned char*) Current_Node_1->Str)), " ", Current_Node_2->Str,  int (35 - strlen_k ((unsigned char*) Current_Node_2->Str)), " ");
 
                     Current_Node_1 = Current_Node_1->Left;
                     Current_Node_2 = Current_Node_2->Left;
@@ -1333,14 +1333,14 @@ int Table_Comparison (stack_k* const Stack_Return_1, stack_k* const Stack_Return
         {
             if (Direction_1 == Right)
             {
-                printf ("| Он(а) НЕ %s%*s     |", Current_Node_1->Str, int (32 - strlen (Current_Node_1->Str) / 2), " ");
+                printf ("| Он(а) НЕ %s%*s     |", Current_Node_1->Str, int (32 - strlen_k ((unsigned char*) Current_Node_1->Str)), " ");
 
                 Current_Node_1 = Current_Node_1->Right;
             }
 
             else if (Direction_1 == Left)
             {
-                printf ("| Он(а) %s%*s     |", Current_Node_1->Str, int (35 - strlen (Current_Node_1->Str) / 2), " ");
+                printf ("| Он(а) %s%*s     |", Current_Node_1->Str, int (35 - strlen_k ((unsigned char*) Current_Node_1->Str)), " ");
 
                 Current_Node_1 = Current_Node_1->Left;
             }
@@ -1353,14 +1353,14 @@ int Table_Comparison (stack_k* const Stack_Return_1, stack_k* const Stack_Return
 
             if (Direction_2 == Right)
             {
-                printf (" Он(а) НЕ %s%*s     |\n", Current_Node_2->Str, int (32 - strlen (Current_Node_2->Str) / 2), " ");
+                printf (" Он(а) НЕ %s%*s     |\n", Current_Node_2->Str, int (32 - strlen_k ((unsigned char*) Current_Node_2->Str)), " ");
 
                 Current_Node_2 = Current_Node_2->Right;
             }
 
             else if (Direction_2 == Left)
             {
-                printf (" Он(а) %s%*s     |\n", Current_Node_2->Str, int (35 - strlen (Current_Node_2->Str) / 2), " ");
+                printf (" Он(а) %s%*s     |\n", Current_Node_2->Str, int (35 - strlen_k ((unsigned char*) Current_Node_2->Str)), " ");
 
                 Current_Node_2 = Current_Node_2->Left;
             }
@@ -1373,6 +1373,119 @@ int Table_Comparison (stack_k* const Stack_Return_1, stack_k* const Stack_Return
     }
 
     printf ("+-----------------------------------------------+-----------------------------------------------+\n");
+    printf ("\n");
+
+    return 0;
+}
+
+int Text_Comparison  (stack_k* const Stack_Return_1, stack_k* const Stack_Return_2, node_k* const Root)
+{
+    char Buffer_1[1000];
+    char Buffer_2[1000];
+    size_t Len_Way = MAX (Stack_Return_1->Size, Stack_Return_2->Size);
+    node_k* Current_Node_1 = Root;
+    node_k* Current_Node_2 = Root;
+    int Flag = Match;
+
+    for (size_t i = 0; i < Len_Way; i++)
+    {
+        int Direction_1 = 0;
+        if (i < Stack_Return_1->Size)
+        {
+            Direction_1 = Stack_Get_Element (Stack_Return_1, Stack_Return_1->Size - i);
+            if (Direction_1 == There_Are_Errors_Stack)
+            {
+                printf ("%s:%d: Error pop from stack in %s\n", __FILE__, __LINE__, __FUNCTION__);
+                return There_Are_Errors;
+            }
+        }
+
+        int Direction_2 = 0;
+        if (i < Stack_Return_2->Size)
+        {
+            Direction_2 = Stack_Get_Element (Stack_Return_2, Stack_Return_2->Size - i);
+            if (Direction_2 == There_Are_Errors_Stack)
+            {
+                printf ("%s:%d: Error pop from stack in %s\n", __FILE__, __LINE__, __FUNCTION__);
+                return There_Are_Errors;
+            }
+        }
+
+
+        if (Flag == Match)
+        {
+            if (Direction_1 != Direction_2)
+            {
+                print_k ("\n\nНо они различаются тем, что:\n\n");
+                Flag = Vary;
+
+                i--;
+            }
+
+            else
+            {
+                if (Direction_1 == Right)
+                {
+                    print_k ("НЕ %s; ", Current_Node_1->Str);
+
+                    Current_Node_1 = Current_Node_1->Right;
+                    Current_Node_2 = Current_Node_2->Right;
+                }
+
+                else if (Direction_1 == Left)
+                {
+                    print_k ("%s; ", Current_Node_1->Str);
+
+                    Current_Node_1 = Current_Node_1->Left;
+                    Current_Node_2 = Current_Node_2->Left;
+                }
+            }
+        }
+
+        else
+        {
+            if (Direction_1 == Right)
+            {
+                strcat (Buffer_1, "НЕ ");
+                strcat (Buffer_1, Current_Node_1->Str);
+                strcat (Buffer_1, "; ");
+
+
+                Current_Node_1 = Current_Node_1->Right;
+            }
+
+            else if (Direction_1 == Left)
+            {
+                strcat (Buffer_1, Current_Node_1->Str);
+                strcat (Buffer_1, "; ");
+
+                Current_Node_1 = Current_Node_1->Left;
+            }
+
+
+            if (Direction_2 == Right)
+            {
+                strcat (Buffer_2, "НЕ ");
+                strcat (Buffer_2, Current_Node_2->Str);
+                strcat (Buffer_2, "; ");
+
+                Current_Node_2 = Current_Node_2->Right;
+            }
+
+            else if (Direction_2 == Left)
+            {
+                strcat (Buffer_2, Current_Node_2->Str);
+                strcat (Buffer_2, "; ");
+
+                Current_Node_2 = Current_Node_2->Left;
+            }
+        }
+    }
+
+    print_k ("%s: %s\n\n", Current_Node_1->Str, Buffer_1);
+
+    print_k ("%s: %s\n\n", Current_Node_2->Str, Buffer_2);
+
     printf ("\n");
 
     return 0;
@@ -1683,4 +1796,22 @@ int print_k                 (const char* Format, ...)
     }
 
     return 0;
+}
+
+size_t strlen_k             (const unsigned char* const Str)
+{
+    size_t i = 0;
+    size_t Counter = 0;
+
+    while ( Str[i] != '\0')
+    {
+        i++;
+
+        if (Str[i] < 128)
+        {
+            Counter++;
+        }
+    }
+
+    return (i + Counter) / 2;
 }

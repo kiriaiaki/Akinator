@@ -30,7 +30,8 @@ int Stack_Error        (const stack_k* const Stack);
 int Stack_Dump         (const stack_k* const Stack);
 int Stack_Reallocation (stack_k* const Stack);
 
-int Stack_Push (stack_k* const Stack, const int Element);
-int Stack_Pop  (stack_k* const Stack);
+int Stack_Get_Element (stack_k* const Stack, const size_t Number);
+int Stack_Push        (stack_k* const Stack, const int Element);
+int Stack_Pop         (stack_k* const Stack);
 
 #endif // STACK_H

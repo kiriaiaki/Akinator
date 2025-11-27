@@ -186,7 +186,18 @@ int Stack_Reallocation (stack_k* const Stack)
 }
 
 
-int Stack_Push (stack_k* const Stack, const int Element)
+int Stack_Get_Element (stack_k* const Stack, const size_t Number)
+{
+    if (0 <= Number && Number <= Stack->Size)
+    {
+        return Stack->Array[Number];
+    }
+
+    printf ("Error\n");
+    return 0;
+}
+
+int Stack_Push        (stack_k* const Stack, const int Element)
 {
     if (Stack_Error (Stack) != Not_Error_Stack)
     {
@@ -213,7 +224,7 @@ int Stack_Push (stack_k* const Stack, const int Element)
     return Not_Error_Stack;
 }
 
-int Stack_Pop (stack_k* const Stack)
+int Stack_Pop         (stack_k* const Stack)
 {
     if (Stack_Error (Stack) != Not_Error_Stack)
     {

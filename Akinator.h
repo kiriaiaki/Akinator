@@ -95,6 +95,7 @@ int User_Save        (const tree_k* const Tree);
 int Definition_Node  (const tree_k* const Tree);
 int Comparison_Nods  (const tree_k* const Tree);
 int Table_Comparison (stack_k* const Stack_Return_1, stack_k* const Stack_Return_2, node_k* const Root);
+int Text_Comparison  (stack_k* const Stack_Return_1, stack_k* const Stack_Return_2, node_k* const Root);
 node_k* Search_Node  (const char* const String, node_k* Node, stack_k* const Stack_Return);
 
 int Start_Logfile           ();
@@ -110,3 +111,4 @@ char* Read_Answer           ();
 int getline_k               (char** const Str);
 int Delete_Slash_N          (char* const Str);
 int print_k                 (const char* Format, ...) __attribute__((format(printf, 1, 2)));
+size_t strlen_k             (const unsigned char* const Str);
