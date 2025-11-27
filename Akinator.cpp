@@ -930,7 +930,7 @@ int Play             (tree_k* const Tree)
 
         if (Current_Node->Left != NULL && Current_Node->Right != NULL)
         {
-            print_k ("Он(а) %s?\n\n", Current_Node->Str);
+            print_k ("Он или она %s?\n\n", Current_Node->Str);
         }
 
         else
