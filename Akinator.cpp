@@ -34,7 +34,7 @@ int main ()
         }
     }
 
-    printf ("Пока!\n");
+    print_k ("Пока!\n");
 
     #ifndef DEBUG
         if (Start_Logfile () == There_Are_Errors)
@@ -663,7 +663,7 @@ node_k* Tree_Append    (node_k* const Node, tree_k* const Tree)
 
     Tree->Size += 2;
 
-    printf ("Кого ты загадал: ");
+    print_k ("Кого ты загадал: ");
     if (getline_k (&Node->Left->Str) == There_Are_Errors)
     {
         printf ("%s:%d: Error getline in %s\n", __FILE__, __LINE__, __FUNCTION__);
@@ -671,8 +671,8 @@ node_k* Tree_Append    (node_k* const Node, tree_k* const Tree)
     }
     printf ("\n");
 
-    printf ("Чем %s отличается от %s?\n", Node->Left->Str, Node->Right->Str);
-    printf ("Дополни фразу: Он(а)... \n");
+    print_k ("Чем %s отличается от %s?\n", Node->Left->Str, Node->Right->Str);
+    print_k ("Дополни фразу: Он(а)... \n");
 
     printf ("\nТвой ввод: ");
     if (getline_k (&Node->Str) == There_Are_Errors)
@@ -781,10 +781,11 @@ int Delete_Subtree (node_k* Node, size_t* const Counter_Delete)
 
 int Launch           (tree_k* const Tree)
 {
-    //Clean_Stdin ();
+    Clean_Stdin ();
 
-    printf ("Привет!\n");
-    printf ("Я программа \033[4mАкинатор\033[0m\n\n");
+    print_k ("Привет!\n");
+    print_k ("Я программа Акинатор\n\n");
+//    print_k ("Я программа \033[4mАкинатор\033[0m\n\n");
 
     Again_Start:
 
@@ -810,7 +811,7 @@ int Launch           (tree_k* const Tree)
             return There_Are_Errors;
         }
 
-        printf ("Дерево успешно загружено из базы!\n\n");
+        print_k ("Дерево успешно загружено из базы!\n\n");
 
         free (Answer_User);
         return 0;
@@ -826,7 +827,7 @@ int Launch           (tree_k* const Tree)
 
         Clean_Stdin ();
 
-        printf ("Дерево успешно создано!\n\n");
+        print_k ("Дерево успешно создано!\n\n");
 
         if (User_Save (Tree) == There_Are_Errors)
         {
@@ -846,7 +847,7 @@ int Launch           (tree_k* const Tree)
 
     else
     {
-        printf ("Извини, но такой команды нету в списке, будь повнимательнее\n\n");
+        print_k ("Извини, но такой команды нету в списке, будь повнимательнее\n\n");
 
         goto Again_Start;
     }
@@ -913,7 +914,7 @@ int Run              (tree_k* const Tree)
 
     else
     {
-        printf ("Извини, но такой команды нету в списке, будь повнимательнее\n\n");
+        print_k ("Извини, но такой команды нету в списке, будь повнимательнее\n\n");
 
         goto Again;
     }
@@ -934,7 +935,7 @@ int Play             (tree_k* const Tree)
 
         else
         {
-            printf ("Кажется, я догадываюсь, твой персонаж - %s?\n\n", Current_Node->Str);
+            print_k ("Кажется, я догадываюсь, твой персонаж - %s?\n\n", Current_Node->Str);
         }
 
         printf ("Введи [Д], если ответ ДА\n");
@@ -955,7 +956,7 @@ int Play             (tree_k* const Tree)
         {
             if (Current_Node->Left == NULL && Current_Node->Right == NULL)
             {
-                printf ("Я отгадал, твой персонаж это \033[4m%s\033[0m!\n\n", Current_Node->Str);
+                print_k ("Я отгадал, твой персонаж это \033[4m%s\033[0m!\n\n", Current_Node->Str);
 
                 free (Answer_User);
                 return 0;
@@ -983,7 +984,7 @@ int Play             (tree_k* const Tree)
 
         else
         {
-            printf ("Извини, но такой команды нету в списке, будь повнимательнее\n\n");
+            print_k ("Извини, но такой команды нету в списке, будь повнимательнее\n\n");
 
             goto Again;
         }
@@ -994,8 +995,8 @@ int Append_Person    (node_k* const Current_Node, tree_k* const Tree)
 {
     Again:
 
-    printf ("Похоже, такого персонажа нету в данном дереве ;(\n");
-    printf ("Хочешь добавить своего персонажа в дерево?\n\n");
+    print_k ("Похоже, такого персонажа нету в данном дереве ;(\n");
+    print_k ("Хочешь добавить своего персонажа в дерево?\n\n");
 
     printf ("Введи [Д], если ответ ДА\n");
     printf ("Введи [Н], если ответ НЕТ\n");
@@ -1021,7 +1022,7 @@ int Append_Person    (node_k* const Current_Node, tree_k* const Tree)
 
         Clean_Stdin ();
 
-        printf ("Твой персонаж успешно добавлен!\n\n");
+        print_k ("Твой персонаж успешно добавлен!\n\n");
 
         if (User_Save (Tree) == There_Are_Errors)
         {
@@ -1041,7 +1042,7 @@ int Append_Person    (node_k* const Current_Node, tree_k* const Tree)
 
     else
     {
-        printf ("Извини, но такой команды нету в списке, будь повнимательнее\n\n");
+        print_k ("Извини, но такой команды нету в списке, будь повнимательнее\n\n");
 
         goto Again;
     }
@@ -1051,8 +1052,8 @@ int User_Save        (const tree_k* const Tree)
 {
     Again:
 
-    printf ("Хочешь сохранить дерево в базу?\n");
-    printf ("Старое дерево будет утеряно\n\n");
+    print_k ("Хочешь сохранить дерево в базу?\n");
+    print_k ("Старое дерево будет утеряно\n\n");
 
     printf ("Введи [Д], если ответ ДА\n");
     printf ("Введи [Н], если ответ НЕТ\n");
@@ -1076,7 +1077,7 @@ int User_Save        (const tree_k* const Tree)
             return There_Are_Errors;
         }
 
-        printf ("Твое дерево успешно сохранено в базу!\n\n");
+        print_k ("Твое дерево успешно сохранено в базу!\n\n");
 
         free (Answer_User);
         return 0;
@@ -1090,7 +1091,7 @@ int User_Save        (const tree_k* const Tree)
 
     else
     {
-        printf ("Извини, но такой команды нету в списке, будь повнимательнее\n\n");
+        print_k ("Извини, но такой команды нету в списке, будь повнимательнее\n\n");
 
         goto Again;
     }
@@ -1100,7 +1101,7 @@ int Definition_Node  (const tree_k* const Tree)
 {
     Again:
 
-    printf ("Введи имя узла, для которого я составлю описание\n");
+    print_k ("Введи имя узла, для которого я составлю описание\n");
     printf ("\nТвой ввод: ");
 
     char* Answer_User = Read_Answer ();
@@ -1123,7 +1124,7 @@ int Definition_Node  (const tree_k* const Tree)
     node_k* You_Node = Search_Node (Answer_User, Tree->Root, &Stack_Return);
     if (You_Node == NULL)
     {
-        printf ("Извини, но в данном дереве нет узла - %s\n\n\n", Answer_User);
+        print_k ("Извини, но в данном дереве нет узла - %s\n\n\n", Answer_User);
 
         goto Again;
     }
@@ -1166,7 +1167,7 @@ int Comparison_Nods  (const tree_k* const Tree)
 {
     Again_1:
 
-    printf ("Введи имя первого узла, для которого я составлю сравнение\n");
+    print_k ("Введи имя первого узла, для которого я составлю сравнение\n");
     printf ("\nТвой ввод: ");
 
     char* Answer_User_1 = Read_Answer ();
@@ -1189,14 +1190,14 @@ int Comparison_Nods  (const tree_k* const Tree)
     {
         Clean_Stdin ();
 
-        printf ("Извини, но в данном дереве нет узла - %s\n\n", Answer_User_1);
+        print_k ("Извини, но в данном дереве нет узла - %s\n\n", Answer_User_1);
 
         goto Again_1;
     }
 
     Again_2:
 
-    printf ("\n\nВведи имя второго узла, для которого я составлю сравнение\n");
+    print_k ("\n\nВведи имя второго узла, для которого я составлю сравнение\n");
     printf ("\nТвой ввод: ");
 
     char* Answer_User_2 = Read_Answer ();
@@ -1225,7 +1226,7 @@ int Comparison_Nods  (const tree_k* const Tree)
         printf ("Введи имя первого узла, для которого я составлю сравнение\n");
         printf ("\nТвой ввод: %s\n\n\n", Answer_User_1);
 
-        printf ("Извини, но в данном дереве нет узла - %s\n", Answer_User_2);
+        print_k ("Извини, но в данном дереве нет узла - %s\n", Answer_User_2);
 
         goto Again_2;
     }
@@ -1661,7 +1662,7 @@ int print_k (const char* Format, ...)
     va_list Args;
 
     char Buffer[150];
-    char Say_Command[150];
+    char Say_Command[170];
 
     va_start (Args, Format);
 
@@ -1672,7 +1673,7 @@ int print_k (const char* Format, ...)
 
     printf("%s", Buffer);
 
-    snprintf (Say_Command, 150, "say \"%s\"", Buffer);
+    snprintf (Say_Command, 170, "say -r 180 \"%s\"", Buffer);
 
     int Result = system (Say_Command);
     if (Result == -1)
