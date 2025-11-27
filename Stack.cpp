@@ -188,13 +188,20 @@ int Stack_Reallocation (stack_k* const Stack)
 
 int Stack_Get_Element (stack_k* const Stack, const size_t Number)
 {
-    if (0 <= Number && Number <= Stack->Size)
+    if (Stack_Error (Stack) != Not_Error_Stack)
     {
-        return Stack->Array[Number];
+        Stack_Dump (Stack);
+        printf ("Error in start Stack_Push\n\n");
+        return There_Are_Errors_Stack;
     }
 
-    printf ("Error\n");
-    return 0;
+    if (0 > Number || Number >= Stack->Size)
+    {
+        printf ("Bad Number\n\n");
+        return There_Are_Errors_Stack;
+    }
+
+    return Stack->Array[Number + 1];
 }
 
 int Stack_Push        (stack_k* const Stack, const int Element)

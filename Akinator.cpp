@@ -5,7 +5,6 @@
 #define LIGHT_DUMP
 #define MAX(A, B) ((A) > (B) ? (A) : (B))
 
-
 int main ()
 {
     #ifdef DEBUG
