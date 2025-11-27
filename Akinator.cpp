@@ -672,7 +672,7 @@ node_k* Tree_Append    (node_k* const Node, tree_k* const Tree)
     printf ("\n");
 
     print_k ("Чем %s отличается от %s?\n", Node->Left->Str, Node->Right->Str);
-    print_k ("Дополни фразу: Он(а)... \n");
+    print_k ("Дополни фразу: Он или она... \n");
 
     printf ("\nТвой ввод: ");
     if (getline_k (&Node->Str) == There_Are_Errors)
