@@ -52,6 +52,8 @@ const char* Array_Name_Tree_Error[Quantity_Error] = {
 const int There_Are_Errors      =                -2902;
 const int Canary                =                 2008;
 const int Finish                =                    7;
+const int Match                 =                    0;
+const int Vary                  =                    1;
 const char Name_Log[]           =      "Log_File.html";
 const char Name_Base_Data[]     =      "Base_Data.txt";
 const char New_Name_Base_Data[] =  "Base_Data_New.txt";
@@ -84,12 +86,15 @@ node_k* Append_Sons    (node_k* const Node);
 
 int Delete_Subtree     (node_k* Node, size_t* const Counter_Delete);
 
-int Launch          (tree_k* const Tree);
-int Run             (tree_k* const Tree);
-int Play            (tree_k* const Tree);
-int Definition_Node (const tree_k* const Tree);
-node_k* Search_Node (const char* const String, node_k* Node, stack_k* const Stack_Return);
-int Comparison_Nods (const tree_k* const Tree);
+int Launch           (tree_k* const Tree);
+int Run              (tree_k* const Tree);
+int Play             (tree_k* const Tree);
+int Append_Person    (node_k* const Current_Node, tree_k* const Tree);
+int User_Save        (const tree_k* const Tree);
+int Definition_Node  (const tree_k* const Tree);
+int Comparison_Nods  (const tree_k* const Tree);
+int Table_Comparison (stack_k* const Stack_Return_1, stack_k* const Stack_Return_2, node_k* const Root);
+node_k* Search_Node  (const char* const String, node_k* Node, stack_k* const Stack_Return);
 
 int Start_Logfile           ();
 int Print_Separator_In_Log  (const size_t Len_Separator, FILE* file_html);

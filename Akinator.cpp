@@ -1,4 +1,5 @@
 #include "Akinator.h"
+
 #define DEBUG // включает верификаторы и создание logfile
 //#define STOP_PROGRAMME // в случае выявления ошибок в списке программа останавливается
 #define LIGHT_DUMP
@@ -33,12 +34,7 @@ int main ()
             return There_Are_Errors;
         }
     }
-//     if (Save_Tree_In_File (&Tree) == There_Are_Errors)
-//     {
-//          printf ("%s:%d: Error in %s", __FILE__, __LINE__, __FUNCTION__);
-//          return There_Are_Errors;
-//     }
-// плохо чиститься терминал после сравнения
+
     printf ("Пока!\n");
 
     #ifndef DEBUG
@@ -97,27 +93,29 @@ int New_Tree_Ctor       (tree_k* const Tree)
 
     Tree->Size = 3;
 
-    printf ("Введи первый вопрос в твоем дереве: ");
+    printf ("Какой первый вопрос в твоем дереве, Он(а)...?\n");
+    printf ("\nТвой ввод: ");
     if (getline_k (&Tree->Root->Str) == There_Are_Errors)
     {
         printf ("%s:%d: Error getline in %s\n", __FILE__, __LINE__, __FUNCTION__);
         return There_Are_Errors;
     }
 
-    printf ("\nВведи кого ты загадал, если ответ \"ДА\": ");
+    printf ("\nКого ты загадал, если ответ \"ДА\"\n");
+    printf ("\nТвой ввод: ");
     if (getline_k (&Tree->Root->Left->Str) == There_Are_Errors)
     {
         printf ("%s:%d: Error getline in %s\n", __FILE__, __LINE__, __FUNCTION__);
         return There_Are_Errors;
     }
 
-    printf ("\nВведи кого ты загадал, если ответ \"НЕТ\": ");
+    printf ("\nКого ты загадал, если ответ \"НЕТ\"\n");
+    printf ("\nТвой ввод: ");
     if (getline_k (&Tree->Root->Right->Str) == There_Are_Errors)
     {
         printf ("%s:%d: Error getline in %s\n", __FILE__, __LINE__, __FUNCTION__);
         return There_Are_Errors;
     }
-
 
     #ifdef DEBUG
         if (Tree_Dump (Tree, "New_Tree_Ctor (Tree)") == There_Are_Errors)
@@ -126,6 +124,7 @@ int New_Tree_Ctor       (tree_k* const Tree)
             return There_Are_Errors;
         }
     #endif // DEBUG
+
 
     return 0;
 }
@@ -473,8 +472,6 @@ int Dump_For_Html      (const tree_k* const Tree, const char* const Name_File_Gr
 
 int Save_Tree_In_File  (const tree_k* const Tree)
 {
-    Clean_Stdin ();
-
     FILE* Data_Base = fopen (New_Name_Base_Data, "w");
     if (Data_Base == NULL)
     {
@@ -484,9 +481,7 @@ int Save_Tree_In_File  (const tree_k* const Tree)
 
     Print_Node (Tree->Root, Data_Base);
 
-    Clean_Stdin ();
-
-    printf ("Твое дерево успешно сохранено в базу!\n");
+    fclose (Data_Base);
 
     return 0;
 }
@@ -785,8 +780,10 @@ int Delete_Subtree (node_k* Node, size_t* const Counter_Delete)
 }
 
 
-int Launch          (tree_k* const Tree)
+int Launch           (tree_k* const Tree)
 {
+    Clean_Stdin ();
+
     printf ("Привет!\n");
     printf ("Я программа \033[4mАкинатор\033[0m\n\n");
 
@@ -804,10 +801,10 @@ int Launch          (tree_k* const Tree)
         return There_Are_Errors;
     }
 
+    Clean_Stdin ();
+
     if (strcmp (Answer_User, "Б") == 0 || strcmp (Answer_User, "б") == 0)
     {
-        Clean_Stdin ();
-
         if (Tree_Ctor_From_Base (Tree) == There_Are_Errors)
         {
             printf ("%s:%d: Error in %s\n", __FILE__, __LINE__, __FUNCTION__);
@@ -816,13 +813,12 @@ int Launch          (tree_k* const Tree)
 
         printf ("Дерево успешно загружено из базы!\n\n");
 
+        free (Answer_User);
         return 0;
     }
 
     else if (strcmp (Answer_User, "М") == 0 || strcmp (Answer_User, "м") == 0)
     {
-        Clean_Stdin ();
-
         if (New_Tree_Ctor (Tree) == There_Are_Errors)
         {
             printf ("%s:%d: Error in %s\n", __FILE__, __LINE__, __FUNCTION__);
@@ -832,30 +828,32 @@ int Launch          (tree_k* const Tree)
         Clean_Stdin ();
 
         printf ("Дерево успешно создано!\n\n");
+
+        if (User_Save (Tree) == There_Are_Errors)
+        {
+            printf ("%s:%d: Error in %s\n", __FILE__, __LINE__, __FUNCTION__);
+            return There_Are_Errors;
+        }
+
+        free (Answer_User);
+        return 0;
     }
 
     else if (strcmp (Answer_User, "К") == 0 || strcmp (Answer_User, "к") == 0)
     {
-        Clean_Stdin ();
-
         free (Answer_User);
-
         return Finish;
     }
 
     else
     {
-        Clean_Stdin ();
-
         printf ("Извини, но такой команды нету в списке, будь повнимательнее\n\n");
 
         goto Again_Start;
     }
-
-    return 0;
 }
 
-int Run             (tree_k* const Tree)
+int Run              (tree_k* const Tree)
 {
     Again:
 
@@ -910,10 +908,7 @@ int Run             (tree_k* const Tree)
 
     else if (strcmp (Answer_User, "К") == 0 || strcmp (Answer_User, "к") == 0)
     {
-        Clean_Stdin ();
-
         free (Answer_User);
-
         return 0;
     }
 
@@ -923,22 +918,21 @@ int Run             (tree_k* const Tree)
 
         goto Again;
     }
-
-    return 0;
 }
 
-int Play            (tree_k* const Tree)
+int Play             (tree_k* const Tree)
 {
     node_k* Current_Node = Tree->Root;
 
-    while (Current_Node != NULL)
+    while (1)
     {
-        Again_2:
+        Again:
 
         if (Current_Node->Left != NULL && Current_Node->Right != NULL)
         {
             printf ("Он(а) %s?\n\n", Current_Node->Str);
         }
+
         else
         {
             printf ("Кажется, я догадываюсь, твой персонаж - %s?\n\n", Current_Node->Str);
@@ -975,55 +969,14 @@ int Play            (tree_k* const Tree)
         {
             if (Current_Node->Left == NULL && Current_Node->Right == NULL)
             {
-                Again_1:
-
-                printf ("Похоже, такого персонажа нету в данном дереве ;(\n");
-                printf ("Хочешь добавить своего персонажа в дерево?\n\n");
-
-                printf ("Введи [Д], если ответ ДА\n");
-                printf ("Введи [Н], если ответ НЕТ\n");
-
-                printf ("\nТвой ввод: ");
-
-                Answer_User = Read_Answer ();
-                if (Answer_User == NULL)
+                if (Append_Person (Current_Node, Tree) == There_Are_Errors)
                 {
                     printf ("%s:%d: Error in %s\n", __FILE__, __LINE__, __FUNCTION__);
                     return There_Are_Errors;
                 }
 
-                Clean_Stdin ();
-
-                if (strcmp (Answer_User, "Д") == 0 || strcmp (Answer_User, "д") == 0)
-                {
-                    if (Tree_Append (Current_Node, Tree) == NULL)
-                    {
-                        printf ("%s:%d: Error in %s\n", __FILE__, __LINE__, __FUNCTION__);
-                        free (Answer_User);
-                        return There_Are_Errors;
-                    }
-
-                    Clean_Stdin ();
-
-                    printf ("Твой персонаж успешно добавлен!\n\n");
-
-                    free (Answer_User);
-                    return 0;
-                }
-
-                else if (strcmp (Answer_User, "Н") == 0 || strcmp (Answer_User, "н") == 0)
-                {
-                    free (Answer_User);
-                    return 0;
-                }
-
-                else
-                {
-                    printf ("Извини, но такой команды нету в списке, будь повнимательнее\n\n");
-
-                    goto Again_1;
-                }
-
+                free (Answer_User);
+                return 0;
             }
 
             Current_Node = Current_Node->Right;
@@ -1033,17 +986,118 @@ int Play            (tree_k* const Tree)
         {
             printf ("Извини, но такой команды нету в списке, будь повнимательнее\n\n");
 
-            goto Again_2;
+            goto Again;
+        }
+    }
+}
+
+int Append_Person    (node_k* const Current_Node, tree_k* const Tree)
+{
+    Again:
+
+    printf ("Похоже, такого персонажа нету в данном дереве ;(\n");
+    printf ("Хочешь добавить своего персонажа в дерево?\n\n");
+
+    printf ("Введи [Д], если ответ ДА\n");
+    printf ("Введи [Н], если ответ НЕТ\n");
+
+    printf ("\nТвой ввод: ");
+
+    char* Answer_User = Read_Answer ();
+    if (Answer_User == NULL)
+    {
+        printf ("%s:%d: Error in %s\n", __FILE__, __LINE__, __FUNCTION__);
+        return There_Are_Errors;
+    }
+
+    Clean_Stdin ();
+
+    if (strcmp (Answer_User, "Д") == 0 || strcmp (Answer_User, "д") == 0)
+    {
+        if (Tree_Append (Current_Node, Tree) == NULL)
+        {
+            printf ("%s:%d: Error in %s\n", __FILE__, __LINE__, __FUNCTION__);
+            return There_Are_Errors;
+        }
+
+        Clean_Stdin ();
+
+        printf ("Твой персонаж успешно добавлен!\n\n");
+
+        if (User_Save (Tree) == There_Are_Errors)
+        {
+            printf ("%s:%d: Error in %s\n", __FILE__, __LINE__, __FUNCTION__);
+            return There_Are_Errors;
         }
 
         free (Answer_User);
+        return 0;
     }
 
+    else if (strcmp (Answer_User, "Н") == 0 || strcmp (Answer_User, "н") == 0)
+    {
+        free (Answer_User);
+        return 0;
+    }
 
-    return 0;
+    else
+    {
+        printf ("Извини, но такой команды нету в списке, будь повнимательнее\n\n");
+
+        goto Again;
+    }
 }
 
-int Definition_Node (const tree_k* const Tree)
+int User_Save        (const tree_k* const Tree)
+{
+    Again:
+
+    printf ("Хочешь сохранить дерево в базу?\n");
+    printf ("Старое дерево будет утеряно\n\n");
+
+    printf ("Введи [Д], если ответ ДА\n");
+    printf ("Введи [Н], если ответ НЕТ\n");
+
+    printf ("\nТвой ввод: ");
+
+    char* Answer_User = Read_Answer ();
+    if (Answer_User == NULL)
+    {
+        printf ("%s:%d: Error in %s\n", __FILE__, __LINE__, __FUNCTION__);
+        return There_Are_Errors;
+    }
+
+    Clean_Stdin ();
+
+    if (strcmp (Answer_User, "Д") == 0 || strcmp (Answer_User, "д") == 0)
+    {
+        if (Save_Tree_In_File (Tree) == There_Are_Errors)
+        {
+            printf ("%s:%d: Error in %s", __FILE__, __LINE__, __FUNCTION__);
+            return There_Are_Errors;
+        }
+
+        printf ("Твое дерево успешно сохранено в базу!\n\n");
+
+        free (Answer_User);
+        return 0;
+    }
+
+    else if (strcmp (Answer_User, "Н") == 0 || strcmp (Answer_User, "н") == 0)
+    {
+        free (Answer_User);
+        return 0;
+    }
+
+    else
+    {
+        printf ("Извини, но такой команды нету в списке, будь повнимательнее\n\n");
+
+        goto Again;
+    }
+}
+
+int Definition_Node  (const tree_k* const Tree)
 {
     Again:
 
@@ -1070,9 +1124,7 @@ int Definition_Node (const tree_k* const Tree)
     node_k* You_Node = Search_Node (Answer_User, Tree->Root, &Stack_Return);
     if (You_Node == NULL)
     {
-        Clean_Stdin ();
-
-        printf ("Извини, но в данном дереве нет узла - %s\n\n", Answer_User);
+        printf ("Извини, но в данном дереве нет узла - %s\n\n\n", Answer_User);
 
         goto Again;
     }
@@ -1103,17 +1155,17 @@ int Definition_Node (const tree_k* const Tree)
             Current_Node = Current_Node->Left;
         }
     }
+
     printf ("\n");
 
     Stack_Dtor (&Stack_Return);
     free (Answer_User);
-
     return 0;
 }
 
-int Comparison_Nods (const tree_k* const Tree)
+int Comparison_Nods  (const tree_k* const Tree)
 {
-    Again:
+    Again_1:
 
     printf ("Введи имя первого узла, для которого я составлю сравнение\n");
     printf ("\nТвой ввод: ");
@@ -1125,7 +1177,27 @@ int Comparison_Nods (const tree_k* const Tree)
         return There_Are_Errors;
     }
 
-    printf ("\nВведи имя второго узла, для которого я составлю сравнение\n");
+    stack_k Stack_Return_1 = {};
+    if (Stack_Ctor (&Stack_Return_1, 10) == There_Are_Errors_Stack)
+    {
+        printf ("%s:%d: Error in %s", __FILE__, __LINE__, __FUNCTION__);
+        free (Answer_User_1);
+        return There_Are_Errors;
+    }
+
+    node_k* First_Node = Search_Node (Answer_User_1, Tree->Root, &Stack_Return_1);
+    if (First_Node == NULL)
+    {
+        Clean_Stdin ();
+
+        printf ("Извини, но в данном дереве нет узла - %s\n\n", Answer_User_1);
+
+        goto Again_1;
+    }
+
+    Again_2:
+
+    printf ("\n\nВведи имя второго узла, для которого я составлю сравнение\n");
     printf ("\nТвой ввод: ");
 
     char* Answer_User_2 = Read_Answer ();
@@ -1137,25 +1209,6 @@ int Comparison_Nods (const tree_k* const Tree)
     }
 
     Clean_Stdin ();
-
-    stack_k Stack_Return_1 = {};
-    if (Stack_Ctor (&Stack_Return_1, 10) == There_Are_Errors_Stack)
-    {
-        printf ("%s:%d: Error in %s", __FILE__, __LINE__, __FUNCTION__);
-        free (Answer_User_1);
-        free (Answer_User_2);
-        return There_Are_Errors;
-    }
-
-    node_k* First_Node = Search_Node (Answer_User_1, Tree->Root, &Stack_Return_1);
-    if (First_Node == NULL)
-    {
-        Clean_Stdin ();
-
-        printf ("Извини, но в данном дереве нет узла - %s\n\n", Answer_User_1);
-
-        goto Again;
-    }
 
     stack_k Stack_Return_2 = {};
     if (Stack_Ctor (&Stack_Return_2, 10) == There_Are_Errors_Stack)
@@ -1170,32 +1223,49 @@ int Comparison_Nods (const tree_k* const Tree)
     node_k* Second_Node = Search_Node (Answer_User_2, Tree->Root, &Stack_Return_2);
     if (Second_Node == NULL)
     {
-        Clean_Stdin ();
+        printf ("Введи имя первого узла, для которого я составлю сравнение\n");
+        printf ("\nТвой ввод: %s\n\n\n", Answer_User_1);
 
-        printf ("Извини, но в данном дереве нет узла - %s\n\n", Answer_User_2);
+        printf ("Извини, но в данном дереве нет узла - %s\n", Answer_User_2);
 
-        goto Again;
+        goto Again_2;
     }
 
-
-    size_t Len_Way = MAX (Stack_Return_1.Size, Stack_Return_2.Size);
-    node_k* Current_Node_1 = Tree->Root;
-    node_k* Current_Node_2 = Tree->Root;
-    int Flag = 0;
-
-    printf ("\n");
     printf ("+-----------------------------------------------+-----------------------------------------------+\n");
     printf ("|  %s%*s     |  %s%*s     |\n", First_Node->Str, int (40 - strlen (First_Node->Str) / 2), " ", Second_Node->Str, int (40 - strlen (Second_Node->Str) / 2), " ");
     printf ("+-----------------------------------------------+-----------------------------------------------+\n");
     printf ("|  %39s  Совпадения %39s  |\n", " ", " ");
 
+    if (Table_Comparison (&Stack_Return_1, &Stack_Return_2, Tree->Root) == There_Are_Errors)
+    {
+        printf ("%s:%d: Error in %s", __FILE__, __LINE__, __FUNCTION__);
+        Stack_Dtor (&Stack_Return_1);
+        Stack_Dtor (&Stack_Return_2);
+        free (Answer_User_1);
+        free (Answer_User_2);
+        return There_Are_Errors;
+    }
+
+    Stack_Dtor (&Stack_Return_1);
+    Stack_Dtor (&Stack_Return_2);
+    free (Answer_User_1);
+    free (Answer_User_2);
+    return 0;
+}
+
+int Table_Comparison (stack_k* const Stack_Return_1, stack_k* const Stack_Return_2, node_k* const Root)
+{
+    size_t Len_Way = MAX (Stack_Return_1->Size, Stack_Return_2->Size);
+    node_k* Current_Node_1 = Root;
+    node_k* Current_Node_2 = Root;
+    int Flag = Match;
+
     for (size_t i = 0; i < Len_Way; i++)
     {
         int Direction_1 = 0;
-
-        if (Stack_Return_1.Size != 0)
+        if (Stack_Return_1->Size != 0)
         {
-            Direction_1 = Stack_Pop (&Stack_Return_1);
+            Direction_1 = Stack_Pop (Stack_Return_1);
             if (Direction_1 == There_Are_Errors_Stack)
             {
                 printf ("%s:%d: Error pop from stack in %s\n", __FILE__, __LINE__, __FUNCTION__);
@@ -1204,10 +1274,9 @@ int Comparison_Nods (const tree_k* const Tree)
         }
 
         int Direction_2 = 0;
-
-        if (Stack_Return_2.Size != 0)
+        if (Stack_Return_2->Size != 0)
         {
-            Direction_2 = Stack_Pop (&Stack_Return_2);
+            Direction_2 = Stack_Pop (Stack_Return_2);
             if (Direction_2 == There_Are_Errors_Stack)
             {
                 printf ("%s:%d: Error pop from stack in %s\n", __FILE__, __LINE__, __FUNCTION__);
@@ -1216,17 +1285,16 @@ int Comparison_Nods (const tree_k* const Tree)
         }
 
 
-        if (Flag == 0)
+        if (Flag == Match)
         {
             if (Direction_1 != Direction_2)
             {
-                if (Stack_Push (&Stack_Return_1, Direction_1) == There_Are_Errors_Stack)
+                if (Stack_Push (Stack_Return_1, Direction_1) == There_Are_Errors_Stack)
                 {
                     printf ("%s:%d: Error push in stack in %s\n", __FILE__, __LINE__, __FUNCTION__);
                     return There_Are_Errors;
                 }
-
-                if (Stack_Push (&Stack_Return_2, Direction_2) == There_Are_Errors_Stack)
+                if (Stack_Push (Stack_Return_2, Direction_2) == There_Are_Errors_Stack)
                 {
                     printf ("%s:%d: Error push in stack in %s\n", __FILE__, __LINE__, __FUNCTION__);
                     return There_Are_Errors;
@@ -1235,7 +1303,7 @@ int Comparison_Nods (const tree_k* const Tree)
                 printf ("+-----------------------------------------------+-----------------------------------------------+\n");
                 printf ("|  %40s  Различия %40s  |\n", " ", " ");
 
-                Flag = 1;
+                Flag = Vary;
 
                 i--;
             }
@@ -1306,15 +1374,10 @@ int Comparison_Nods (const tree_k* const Tree)
     printf ("+-----------------------------------------------+-----------------------------------------------+\n");
     printf ("\n");
 
-    Stack_Dtor (&Stack_Return_1);
-    Stack_Dtor (&Stack_Return_2);
-    free (Answer_User_1);
-    free (Answer_User_2);
-
     return 0;
 }
 
-node_k* Search_Node (const char* const String, node_k* Node, stack_k* const Stack_Return)
+node_k* Search_Node  (const char* const String, node_k* Node, stack_k* const Stack_Return)
 {
     if (Node->Left == NULL && Node->Right == NULL)
     {
@@ -1592,5 +1655,4 @@ int Delete_Slash_N          (char* const Str)
         return There_Are_Errors;
     }
 }
-
 
