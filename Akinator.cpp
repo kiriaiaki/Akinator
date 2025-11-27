@@ -956,7 +956,8 @@ int Play             (tree_k* const Tree)
         {
             if (Current_Node->Left == NULL && Current_Node->Right == NULL)
             {
-                print_k ("Я отгадал, твой персонаж это \033[4m%s\033[0m!\n\n", Current_Node->Str);
+                print_k ("Я отгадал, твой персонаж это %s!\n\n", Current_Node->Str);
+                // print_k ("Я отгадал, твой персонаж это \033[4m%s\033[0m!\n\n", Current_Node->Str);
 
                 free (Answer_User);
                 return 0;
@@ -1656,8 +1657,7 @@ int Delete_Slash_N          (char* const Str)
     }
 }
 
-
-int print_k (const char* Format, ...)
+int print_k                 (const char* Format, ...)
 {
     va_list Args;
 

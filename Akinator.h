@@ -109,5 +109,4 @@ int Clean_Stdin             ();
 char* Read_Answer           ();
 int getline_k               (char** const Str);
 int Delete_Slash_N          (char* const Str);
-
-int print_k(const char* Format, ...) __attribute__((format(printf, 1, 2)));
+int print_k                 (const char* Format, ...) __attribute__((format(printf, 1, 2)));
