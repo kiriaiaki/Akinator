@@ -18,15 +18,14 @@ int main ()
 
     tree_k Tree = {};
 
-    int A = Launch (&Tree);
-
-    if (A == There_Are_Errors)
+    int Result = Launch (&Tree);
+    if (Result == There_Are_Errors)
     {
         printf ("%s:%d: Error in %s\n", __FILE__, __LINE__, __FUNCTION__);
         return There_Are_Errors;
     }
 
-    if (A != Finish)
+    if (Result != Finish)
     {
         if (Run (&Tree) == There_Are_Errors)
         {
@@ -782,7 +781,7 @@ int Delete_Subtree (node_k* Node, size_t* const Counter_Delete)
 
 int Launch           (tree_k* const Tree)
 {
-    Clean_Stdin ();
+    //Clean_Stdin ();
 
     printf ("Привет!\n");
     printf ("Я программа \033[4mАкинатор\033[0m\n\n");
@@ -930,7 +929,7 @@ int Play             (tree_k* const Tree)
 
         if (Current_Node->Left != NULL && Current_Node->Right != NULL)
         {
-            printf ("Он(а) %s?\n\n", Current_Node->Str);
+            print_k ("Он(а) %s?\n\n", Current_Node->Str);
         }
 
         else
@@ -1656,3 +1655,31 @@ int Delete_Slash_N          (char* const Str)
     }
 }
 
+
+int print_k (const char* Format, ...)
+{
+    va_list Args;
+
+    char Buffer[150];
+    char Say_Command[150];
+
+    va_start (Args, Format);
+
+    vsnprintf (Buffer, 150, Format, Args);
+
+    va_end (Args);
+
+
+    printf("%s", Buffer);
+
+    snprintf (Say_Command, 150, "say \"%s\"", Buffer);
+
+    int Result = system (Say_Command);
+    if (Result == -1)
+    {
+        printf ("%s:%d: Error system in %s\n", __FILE__, __LINE__, __FUNCTION__);
+        return There_Are_Errors;
+    }
+
+    return 0;
+}
